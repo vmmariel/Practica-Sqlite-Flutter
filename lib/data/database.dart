@@ -67,6 +67,39 @@ class AppDatabase extends _$AppDatabase {
     return into(tareas).insert(TareasCompanion.insert(titulo: limpio));
   }
 
+    /// Cambia el titulo de una tarea existente.
+  ///
+  /// Devuelve true si se modifico alguna fila. Un false significa que el id
+  /// ya no existe en la base, por ejemplo si la tarea se elimino desde otra
+  /// ventana mientras el dialogo estaba abierto.
+  Future<bool> actualizarTitulo(int id, String titulo) async {
+    final limpio = titulo.trim();
+    if (limpio.isEmpty) {
+      throw ArgumentError('El titulo no puede estar vacio');
+    }
+
+    final filasAfectadas = await (update(tareas)..where((t) => t.id.equals(id)))
+        .write(TareasCompanion(titulo: Value(limpio)));
+
+    return filasAfectadas > 0;
+  }
+
+  /// Marca una tarea como completada o pendiente.
+  Future<bool> cambiarEstado(int id, bool completada) async {
+    final filasAfectadas = await (update(tareas)..where((t) => t.id.equals(id)))
+        .write(TareasCompanion(completada: Value(completada)));
+
+    return filasAfectadas > 0;
+  }
+
+  /// Elimina una tarea por su identificador.
+  Future<bool> eliminarTarea(int id) async {
+    final filasAfectadas =
+        await (delete(tareas)..where((t) => t.id.equals(id))).go();
+
+    return filasAfectadas > 0;
+  }
+
   /// Abre la base persistente en la ubicacion adecuada de cada plataforma.
   ///
   /// `driftDatabase` resuelve por si solo la ruta en Android, iOS, Windows,
