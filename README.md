@@ -5,7 +5,7 @@ Aplicación Flutter que administra tareas con persistencia en una base de datos
 
 ## Tecnología de persistencia
 
-Se eligió **Drift** sobre **drift_flutter** en lugar de `sqflite`.
+Se eligió **Drift** junto con **drift_flutter** en lugar de `sqflite`.
 
 | Criterio | sqflite | Drift + drift_flutter |
 |---|---|---|
@@ -42,6 +42,8 @@ lib/
 ├── data/
 │   ├── database.dart          Tabla, AppDatabase y operaciones CRUD
 │   └── database.g.dart        Generado por build_runner (no editar)
+├── theme/
+│   └── app_theme.dart         Paleta Mauve Minimal y estilos de la app
 └── screens/
     └── tareas_page.dart       Interfaz: lista reactiva y diálogos
 web/
@@ -78,6 +80,28 @@ flutter run -d chrome --web-port=8080
 la misma versión de `drift` registrada en `pubspec.lock`. Deben actualizarse
 junto con el paquete.
 
+## Identidad visual
+
+La interfaz usa una paleta propia, **Mauve Minimal**: neutros cálidos con
+malvas y rosas empolvados, definida en `lib/theme/app_theme.dart`.
+
+| Uso | Color |
+|---|---|
+| Acento principal | `#7E5E85` |
+| Rosa empolvado | `#C9A9B4` |
+| Fondo | `#FAF7F9` |
+| Superficie | `#FFFFFF` |
+| Borde | `#E9E1E6` |
+| Texto principal | `#2E2930` |
+| Texto secundario | `#786E7C` |
+| Error | `#A8536B` |
+
+Decisiones de diseño: superficies planas y separadores de 0.5 px en lugar de
+tarjetas elevadas; marca circular propia en vez del `Checkbox` cuadrado de
+Material, con tachado y atenuación al completar; contador de progreso en el
+encabezado. El tema está centralizado en un solo archivo, de modo que la capa
+visual no toca la lógica de persistencia.
+
 ## Plataformas verificadas
 
 | Entorno | Plataforma | Estado |
@@ -112,11 +136,14 @@ navegador: `WasmStorageImplementation.sharedIndexedDb`.
 flutter test
 ```
 
-- `database_test.dart` cubre la validación de títulos, el ciclo completo de
-  alta, consulta, edición, cambio de estado y eliminación, el caso de un `id`
+**14 pruebas, todas en verde.**
+
+- `database_test.dart` cubre la validación de títulos (vacío, solo espacios,
+  recorte de espacios, renombrado inválido), el ciclo completo de alta,
+  consulta, edición, cambio de estado y eliminación, el caso de un `id`
   inexistente, y que el `Stream` se reemite tras cada escritura.
 - `widget_test.dart` cubre el arranque de la pantalla, el rechazo de un título
   vacío desde la interfaz y el alta visible en la lista.
 
-Ambas usan `NativeDatabase.memory()`: el mismo motor SQLite, sobre una base
-temporal en memoria.
+Ambas usan `NativeDatabase.memory()`: el mismo motor SQLite que en producción,
+sobre una base temporal en memoria, de modo que cada prueba arranca limpia.

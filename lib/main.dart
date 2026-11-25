@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 
 import 'data/database.dart';
 import 'screens/tareas_page.dart';
+import 'theme/app_theme.dart';
 
 void main() {
   // Necesario porque drift_flutter consulta rutas de la plataforma
@@ -51,12 +52,7 @@ class _GestorTareasAppState extends State<GestorTareasApp> {
     return MaterialApp(
       title: 'Gestor de tareas',
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: Colors.indigo,
-        ),
-        useMaterial3: true,
-      ),
+      theme: AppTheme.claro,
       home: TareasPage(database: widget.database),
     );
   }
