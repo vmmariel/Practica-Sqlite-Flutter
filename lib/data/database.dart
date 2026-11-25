@@ -1,5 +1,6 @@
 import 'package:drift/drift.dart';
 import 'package:drift_flutter/drift_flutter.dart';
+import 'package:flutter/foundation.dart';
 
 part 'database.g.dart';
 
@@ -105,12 +106,24 @@ class AppDatabase extends _$AppDatabase {
   /// `driftDatabase` resuelve por si solo la ruta en Android, iOS, Windows,
   /// Linux y macOS, y en web usa WebAssembly. Por eso el resto del codigo
   /// no necesita ninguna condicional por plataforma.
-  static QueryExecutor _abrirConexion() {
+    static QueryExecutor _abrirConexion() {
     return driftDatabase(
       name: 'gestor_tareas',
       web: DriftWebOptions(
         sqlite3Wasm: Uri.parse('sqlite3.wasm'),
         driftWorker: Uri.parse('drift_worker.dart.js'),
+        // Informa que mecanismo de almacenamiento eligio el navegador.
+        // Sirve como evidencia de que la persistencia web esta activa.
+        onResult: (resultado) {
+          debugPrint(
+            'Drift web: implementacion ${resultado.chosenImplementation}',
+          );
+          if (resultado.missingFeatures.isNotEmpty) {
+            debugPrint(
+              'Funciones no disponibles: ${resultado.missingFeatures}',
+            );
+          }
+        },
       ),
     );
   }
