@@ -38,6 +38,35 @@ class AppDatabase extends _$AppDatabase {
   @override
   int get schemaVersion => 1;
 
+  /// Observa la lista completa de tareas.
+  ///
+  /// Devuelve un Stream: Drift vuelve a emitir la lista cada vez que la tabla
+  /// cambia, sin que la interfaz tenga que volver a consultar manualmente.
+  /// Las pendientes aparecen primero y, dentro de cada grupo, las mas
+  /// recientes arriba.
+  Stream<List<Tarea>> observarTareas() {
+    return (select(tareas)
+          ..orderBy([
+            (t) => OrderingTerm(expression: t.completada),
+            (t) => OrderingTerm(
+                  expression: t.creadaEn,
+                  mode: OrderingMode.desc,
+                ),
+          ]))
+        .watch();
+  }
+
+  /// Inserta una tarea nueva y devuelve el id asignado por SQLite.
+  ///
+  /// Lanza [ArgumentError] si el titulo esta vacio o solo tiene espacios.
+  Future<int> agregarTarea(String titulo) {
+    final limpio = titulo.trim();
+    if (limpio.isEmpty) {
+      throw ArgumentError('El titulo no puede estar vacio');
+    }
+    return into(tareas).insert(TareasCompanion.insert(titulo: limpio));
+  }
+
   /// Abre la base persistente en la ubicacion adecuada de cada plataforma.
   ///
   /// `driftDatabase` resuelve por si solo la ruta en Android, iOS, Windows,

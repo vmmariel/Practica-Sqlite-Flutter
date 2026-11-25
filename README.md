@@ -36,7 +36,7 @@ y lo expone como `bool` en Dart.
 
 ```bash
 flutter pub get
-dart run build_runner build --delete-conflicting-outputs
+dart run build_runner build
 flutter run -d <dispositivo>
 ```
 
